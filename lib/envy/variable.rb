@@ -2,10 +2,11 @@ module Envy
   class Variable
     attr_reader :environment, :name, :options
 
-    # environment        - an instance of Envy::Environment
-    # name               - the name of the environment variable
-    # options[:default]  - a default value or Proc if the variable is not set
-    # options[:required] - a boolean indiciting if a value is required
+    # environment           - an instance of Envy::Environment
+    # name                  - the name of the environment variable
+    # options[:description] - a friendly description of the environment variable
+    # options[:required]    - a boolean indiciting if a value is required
+    # options[:default]     - a default value or Proc if the variable is not set
     def initialize(environment, name, options = {}, &default)
       @environment = environment
       @name = name
