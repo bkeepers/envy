@@ -34,8 +34,17 @@ module Envy
       end
     end
 
-    # The name of the accessor method that will be defined on the
-    # `Envy::Environment` instance. Override in subclasses to customize.
+    # The default value for this variable when it is not set in the environment.
+    def default
+      if @default.respond_to?(:to_proc)
+        environment.instance_eval(&@default)
+      else
+        @default
+      end
+    end
+
+    # The name of the accessor method that will be defined on the `environment`
+    # instance. Override in subclasses to customize.
     def accessor_name
       name
     end
@@ -53,13 +62,7 @@ module Envy
     #
     # Returns a string from the environment variable, or the default value.
     def value
-      environment.env.fetch(name.to_s.upcase) do
-        if @default.respond_to?(:to_proc)
-          environment.instance_eval(&@default)
-        else
-          @default
-        end
-      end
+      environment.env.fetch(name.to_s.upcase) { default }
     end
 
     # Override in subclasses to perform casting.
