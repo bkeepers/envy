@@ -53,7 +53,9 @@ module Envy
     #
     # Returns the cast environment variable.
     def accessor
-      cast(value).tap do |result|
+      return @value if defined?(@value)
+
+      @value = cast(value).tap do |result|
         raise ArgumentError, "#{name} is required" if required? && result.nil?
       end
     end
@@ -70,6 +72,11 @@ module Envy
     # value - A string from the environment, or the default value
     def cast(value)
       value
+    end
+
+    # Unset the memoized value.
+    def reset
+      remove_instance_variable(:@value)
     end
   end
 end
