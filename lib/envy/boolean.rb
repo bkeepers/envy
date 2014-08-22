@@ -1,4 +1,7 @@
 module Envy
+  # A boolean environment variable
+  #
+  # Boolean-ish values get cast into true/false boolean values.
   class Boolean < Variable
     VALUES = {
       nil => nil, '' => nil,
