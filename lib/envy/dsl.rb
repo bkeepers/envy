@@ -22,6 +22,10 @@ module Envy
       add Boolean.new(name, options, &default)
     end
 
+    def uri(name, options = {}, &default)
+      add URI.new(name, options, &default)
+    end
+
     def eval(filename)
       contents = File.read(filename)
       super contents, binding, filename.to_s, 1
