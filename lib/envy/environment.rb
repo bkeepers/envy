@@ -14,9 +14,7 @@ module Envy
 
     def add(variable)
       @variables[variable.name] = variable
-      accessors.send :define_method, variable.accessor_name do
-        variable.accessor(self)
-      end
+      accessors.send :define_method, variable.accessor_name, &variable.method(:accessor)
     end
 
     def [](name)
