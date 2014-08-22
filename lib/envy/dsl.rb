@@ -15,15 +15,15 @@ module Envy
     end
 
     def string(name, options = {}, &default)
-      add Variable.new(name, options, &default)
+      add Variable.new(environment, name, options, &default)
     end
 
     def integer(name, options = {}, &default)
-      add Integer.new(name, options, &default)
+      add Integer.new(environment, name, options, &default)
     end
 
     def boolean(name, options = {}, &default)
-      add Boolean.new(name, options, &default)
+      add Boolean.new(environment, name, options, &default)
     end
 
     def eval(filename)

@@ -1,11 +1,13 @@
 module Envy
   class Variable
-    attr_reader :name, :options
+    attr_reader :environment, :name, :options
 
+    # environment        - an instance of Envy::Environment
     # name               - the name of the environment variable
     # options[:default]  - a default value or Proc if the variable is not set
     # options[:required] - a boolean indiciting if a value is required
-    def initialize(name, options = {}, &default)
+    def initialize(environment, name, options = {}, &default)
+      @environment = environment
       @name = name
       @options = options
       @default = default || options[:default]
@@ -22,10 +24,8 @@ module Envy
     #     desc "PEM file with encryption keys"
     #     string :pem, :required => :force_ssl?
     #
-    # environment - an instance of Envy::Environment
-    #
     # Returns true if the variable is required.
-    def required?(environment)
+    def required?
       if options[:required].respond_to?(:to_proc)
         environment.instance_eval(&options[:required])
       else
@@ -41,21 +41,17 @@ module Envy
 
     # The method that gets defined on the environment to read this variable.
     #
-    # environment - an instance of Envy::Environment
-    #
     # Returns the cast environment variable.
-    def accessor(environment)
-      cast(value(environment)).tap do |result|
-        raise ArgumentError, "#{name} is required" if required?(environment) && result.nil?
+    def accessor
+      cast(value).tap do |result|
+        raise ArgumentError, "#{name} is required" if required? && result.nil?
       end
     end
 
     # Fetch the value from the environment
     #
-    # environment - an instance of Envy::Environment
-    #
     # Returns a string from the environment variable, or the default value.
-    def value(environment)
+    def value
       environment.env.fetch(name.to_s.upcase) do
         if @default.respond_to?(:to_proc)
           environment.instance_eval(&@default)
