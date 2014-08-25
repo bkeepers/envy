@@ -2,30 +2,42 @@ require "spec_helper"
 
 describe Envy::Variable do
   let(:environment) { Envy::Environment.new({}) }
+  let(:options) { {} }
+  subject do
+    Envy::Variable.new(environment, :test, options) { Time.now.to_s }
+  end
 
   describe "accessor" do
     it "memoizes default values" do
-      var = Envy::Variable.new(environment, :test) { Time.now.to_s }
-      expect(var.accessor).to equal(var.accessor)
+      expect(subject.accessor).to equal(subject.accessor)
     end
 
     it "memoizes cast values" do
       environment.env["TEST"] = "42"
-      var = Envy::Variable.new(environment, :test)
-
-      value = var.accessor
-      expect(var).not_to receive(:cast)
-      expect(var.accessor).to equal(value)
+      value = subject.accessor
+      expect(subject).not_to receive(:cast)
+      expect(subject.accessor).to equal(value)
     end
   end
 
   describe "reset" do
     it "clears memoized value" do
-      var = Envy::Variable.new(environment, :test) { Time.now.to_s }
-      value = var.accessor
-      var.reset
-      expect(var.accessor).not_to equal(value)
+      value = subject.accessor
+      subject.reset
+      expect(subject.accessor).not_to equal(value)
     end
   end
 
+  describe "with :from option" do
+    before do
+      options[:from] = "OTHER_VAR"
+    end
+
+    it "fetches value from given name" do
+      environment.env["TEST"] = "not used"
+      environment.env["OTHER_VAR"] = "the real slim shady"
+
+      expect(subject.accessor).to eql("the real slim shady")
+    end
+  end
 end
