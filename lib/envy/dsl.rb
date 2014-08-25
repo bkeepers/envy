@@ -27,7 +27,7 @@ module Envy
     end
 
     def uri(name, options = {}, &default)
-      add URI.new(name, options, &default)
+      add URI.new(environment, name, options, &default)
     end
 
     def eval(filename)
