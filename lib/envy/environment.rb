@@ -8,6 +8,11 @@ module Envy
       extend accessors
     end
 
+    def configure(filename = "Envfile")
+      Envy::DSL.new(self).eval(filename)
+      self
+    end
+
     def accessors
       @accessors ||= Module.new
     end
