@@ -1,6 +1,7 @@
 require "envy/version"
 require "envy/environment"
 require "envy/dsl"
+require "envy/uri"
 
 module Envy
   def self.env

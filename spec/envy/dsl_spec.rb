@@ -70,6 +70,19 @@ describe Envy::DSL do
     end
   end
 
+  describe "uri" do
+    it "returns nil if not defined" do
+      dsl.uri :app_url
+      expect(config.app_url).to be(nil)
+    end
+
+    it "returns a URI" do
+      env["APP_URL"] = "http://example.com"
+      dsl.uri :app_url
+      expect(config.app_url).to be_instance_of(Addressable::URI)
+    end
+  end
+
   describe ":default option" do
     it "returns the default if no value is provided" do
       dsl.string :blank, :default => "not blank"
