@@ -24,4 +24,9 @@ describe Envy::Railtie do
   it "evalates the Envfile" do
     expect(application.env).to respond_to(:from_envfile)
   end
+
+  it "defines rake tasks" do
+    application.load_tasks
+    expect(Rake.application["env"]).to be_instance_of(Rake::Task)
+  end
 end
