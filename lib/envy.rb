@@ -11,3 +11,5 @@ module Envy
 
   extend self
 end
+
+require "envy/rails" if defined?(Rails)
