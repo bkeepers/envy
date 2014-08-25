@@ -17,7 +17,7 @@ describe Envy::URI do
         uri = subject.cast("s3://mykey:mysecret@mybucket/mypath")
         expect(uri).to be_instance_of(Addressable::URI)
         expect(uri.user).to eql("mykey")
-        expect(uri.password).to eql("mykey")
+        expect(uri.password).to eql("mysecret")
       end
 
       it "raises an error if it does not match" do
