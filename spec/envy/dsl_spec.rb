@@ -83,6 +83,20 @@ describe Envy::DSL do
     end
   end
 
+  describe "decimal" do
+    it "returns nil if not defined" do
+      dsl.decimal :price
+      expect(config.price).to be(nil)
+    end
+
+    it "returns a decimal" do
+      env["PRICE"] = "1.23"
+      dsl.decimal :price
+      expect(config.price).to be_instance_of(BigDecimal)
+      expect(config.price).to eq(BigDecimal.new("1.23"))
+    end
+  end
+
   describe ":default option" do
     it "returns the default if no value is provided" do
       dsl.string :blank, :default => "not blank"
