@@ -20,5 +20,10 @@ module Envy
     def [](name)
       @variables[name]
     end
+
+    # Reset memoized values for all variables
+    def reset
+      @variables.values.each(&:reset)
+    end
   end
 end
