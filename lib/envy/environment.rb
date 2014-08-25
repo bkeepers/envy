@@ -1,5 +1,7 @@
 module Envy
   class Environment
+    include Enumerable
+
     attr_reader :env
 
     def initialize(env = ENV)
@@ -19,6 +21,10 @@ module Envy
 
     def [](name)
       @variables[name]
+    end
+
+    def each(&block)
+      @variables.values.each(&block)
     end
   end
 end
