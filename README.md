@@ -2,57 +2,93 @@
 
 a schema describing and validating the environment variables needed by an application.
 
+Envy reads the schema from an `Envfile` when an application bootstraps and:
+
+0. declares the variables available to the application
+0. validates required variables
+0. casts values
+0. sets default values
+0. creates reader methods that fetch values from `ENV`
+
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'envy'
+    gem "envy"
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install envy
-
 ## Usage
 
-### string
-
-A `string` is the simplest variable that can be defined.
+Create an `Envfile` in the root of your application.
 
 ```ruby
-desc "The main external hostname."
-string :host_name, :default => "example.com"
-```
+desc "Support email shown on the contact page."
+string :support_email, :default => "support@example.com"
 
-This defines a reader on `Envy.env.host_name` (or `Rails.application.config.host_name` for a Rails application), returning the default value if `ENV["HOST_NAME"]` is not set.
+desc "The max duration (in seconds) a request can take before it times out."
+integer :request_timeout, :default => 10
 
-### boolean
-
-```ruby
 desc "Boolean attribute specifying whether the site is in SSL mode."
 boolean :ssl, :default => true
 ```
 
-This defines a reader `Envy.env.ssl?` and cast the values "0", "1", "true", or "false" into boolean values in Ruby.
-
-### integer
-
-`integer` will validate and cast environment variables to integers.
+Every variable that is declared gets a reader method defined on `Envy.env`. This reader method fetches the value from `ENV`, or falls back to a `:default` if one is defined.
 
 ```ruby
-desc "The max duration (in seconds) a request can take before it times out."
+# config/application.rb
+config.middleware.use RequestTimeoutMiddleware, Envy.env.request_timeout
+
+config.action_mailer.default_options = {
+  from: Envy.env.support_email
+}
+
+config.force_ssl = Envy.env.ssl?
+```
+
+Variables can then be overridden in the environment at runtime using the variable name in `SCREAMING_SNAKE_CASE`:
+
+```
+$ REQUEST_TIMEOUT=30 rails server
+```
+
+## Types
+
+Envy supports type casting of variable values.
+
+### `string`
+
+```ruby
+string :support_email, :default => "support@example.com"
+```
+
+A `string` is the simplest variable that can be defined. It defines a reader on `Envy.env.host_name`, returning the default value if `ENV["HOST_NAME"]` is not set.
+
+### `boolean`
+
+```ruby
+boolean :ssl, :default => true
+```
+
+`boolean` defines a reader `Envy.env.ssl?` and cast the values "0", "1", "true", or "false" into boolean values in Ruby.
+
+### `integer`
+
+```ruby
 integer :request_timeout, :default => 10
 ```
+
+`integer` defines a reader `Envy.env.request_timeout` which validates and casts environment variables to an integer.
+
+## Options
 
 ### `:required`
 
 The `:required` option can be used to enforce that a variable be defined by the environment.
 
 ```ruby
-desc "A PEM of the encryption key used to encrypt sensitive data."
 string :encryption_key, :required => true
 ```
 
@@ -64,49 +100,20 @@ ArgumentError: ENCRYPTION_KEY must be set in `ENV`
 
 ### `:default`
 
-The `:default` option can make use of variable substitution to use existing environment variables.
+The `:default` can be used to set a default value when the variable is not defined in `ENV`.
 
 ```ruby
-desc "The host name where the API is served from."
-string :api_host_name, :default => "api.$HOST_NAME"
+integer :request_timeout, :default => 10
 ```
 
-A block passed to a declaration will be called if a variable is not set and can be used to execute logic for setting the default.
+If logic is required to set a default, a block can be passed to a declaration and it will be called if a variable is not set in `ENV`.
 
 ```ruby
-desc "Is the current environment connected to the public internet?"
-boolean :online do
-  check_for_internet_connection? ? google_reachable? : true
-end
-
-desc "Should a check be performed to detect if there is an internet connection?"
 boolean :check_for_internet_connection?, :default => false
-```
 
-## rake env
-
-All of this then makes it easy to inspect the environment variables available to the application.
-
-```
-$ rake env
-
-# The main external hostname.
-HOST_NAME=example.com
-
-# Boolean attribute specifying whether the site is in SSL mode.
-SSL=true
-
-# A PEM of the encryption key used to encrypt sensitive data. (Required)
-# ENCRYPTION_KEY=
-
-# Is the current environment connected to the public internet?
-# ONLINE=
-
-# The max duration (in seconds) a request can take before it times out.
-REQUEST_TIMEOUT=10
-
-The host name where the API is served from.
-API_HOST_NAME=api.$HOST_NAME
+boolean :online do
+  check_for_internet_connection? ? Site.google_reachable? : true
+end
 ```
 
 ## Why?
