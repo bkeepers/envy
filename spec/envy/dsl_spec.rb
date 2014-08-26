@@ -80,6 +80,21 @@ describe Envy::DSL do
       env["APP_URL"] = "http://example.com"
       dsl.uri :app_url
       expect(config.app_url).to be_instance_of(Addressable::URI)
+      expect(config.app_url.to_s).to eq("http://example.com")
+    end
+  end
+
+  describe "decimal" do
+    it "returns nil if not defined" do
+      dsl.decimal :price
+      expect(config.price).to be(nil)
+    end
+
+    it "returns a decimal" do
+      env["PRICE"] = "1.23"
+      dsl.decimal :price
+      expect(config.price).to be_instance_of(BigDecimal)
+      expect(config.price).to eq(BigDecimal.new("1.23"))
     end
   end
 
