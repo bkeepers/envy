@@ -43,21 +43,21 @@ describe Envy::DSL do
   describe "boolean" do
     before { dsl.boolean :bool }
 
-    ["0", "false", false].each do |input|
+    ["0", "false", false, "off", "no", "f", "n"].each do |input|
       it "casts #{input.inspect} to false" do
         env["BOOL"] = input
         expect(config.bool?).to be(false)
       end
     end
 
-    ["1", "true", true].each do |input|
+    ["1", "true", true, "on", "yes", "t", "y"].each do |input|
       it "casts #{input.inspect} to true" do
         env["BOOL"] = input
         expect(config.bool?).to be(true)
       end
     end
 
-    [nil, ''].each do |input|
+    [nil, "", " "].each do |input|
       it "casts #{input.inspect} to nil" do
         env["BOOL"] = input
         expect(config.bool?).to be(nil)
