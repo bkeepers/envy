@@ -80,6 +80,7 @@ describe Envy::DSL do
       env["APP_URL"] = "http://example.com"
       dsl.uri :app_url
       expect(config.app_url).to be_instance_of(Addressable::URI)
+      expect(config.app_url.to_s).to eq("http://example.com")
     end
   end
 
