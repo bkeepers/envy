@@ -1,6 +1,7 @@
 require "envy/variable"
 require "envy/integer"
 require "envy/boolean"
+require "envy/uri"
 
 module Envy
   class DSL
