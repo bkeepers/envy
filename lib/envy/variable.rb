@@ -7,6 +7,7 @@ module Envy
     # options[:description] - a friendly description of the environment variable
     # options[:required]    - a boolean indiciting if a value is required
     # options[:default]     - a default value or Proc if the variable is not set
+    # options[:from]        - the environment variable to fetch the value from
     def initialize(environment, name, options = {}, &default)
       @environment = environment
       @name = name
@@ -64,7 +65,12 @@ module Envy
     #
     # Returns a string from the environment variable, or the default value.
     def value
-      environment.env.fetch(name.to_s.upcase) { default }
+      environment.env.fetch(from) { default }
+    end
+
+    # The name of the environment variable to fetch the value from.
+    def from
+      @from ||= options.fetch(:from) { name.to_s.upcase }
     end
 
     # Override in subclasses to perform casting.
