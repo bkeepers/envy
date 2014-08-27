@@ -12,4 +12,4 @@ module Envy
   extend self
 end
 
-require "envy/rails" if defined?(Rails)
+require "envy/railtie" if defined?(Rails)

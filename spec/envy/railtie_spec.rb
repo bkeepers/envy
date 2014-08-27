@@ -1,6 +1,6 @@
 require "spec_helper"
 require "rails"
-require "envy/rails"
+require "envy/railtie"
 require "rake"
 
 describe Envy::Railtie do
