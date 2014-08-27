@@ -44,19 +44,19 @@ module Envy
       end
     end
 
-    # The name of the accessor method that will be defined on the `environment`
+    # The name of the reader method that will be defined on the `environment`
     # instance. Override in subclasses to customize.
-    def accessor_name
+    def method_name
       name
     end
 
     # The method that gets defined on the environment to read this variable.
     #
     # Returns the cast environment variable.
-    def accessor
+    def value
       return @value if defined?(@value)
 
-      @value = cast(value).tap do |result|
+      @value = cast(fetch).tap do |result|
         raise ArgumentError, "#{name} is required" if required? && result.nil?
       end
     end
@@ -64,7 +64,7 @@ module Envy
     # Fetch the value from the environment
     #
     # Returns a string from the environment variable, or the default value.
-    def value
+    def fetch
       environment.env.fetch(from) { default }
     end
 

@@ -3,7 +3,7 @@ module Envy
   #
   # Boolean-ish values get cast into true/false boolean values.
   class Boolean < Variable
-    def accessor_name
+    def method_name
       "#{name}?"
     end
 
