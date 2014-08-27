@@ -37,6 +37,7 @@ module Envy
     end
 
     def eval(filename)
+      raise EnvfileNotFound, "#{filename} not found" unless File.exists?(filename)
       contents = File.read(filename)
       super contents, binding, filename.to_s, 1
     end

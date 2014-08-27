@@ -155,5 +155,9 @@ describe Envy::DSL do
       dsl.eval(Pathname.new(fixture_path("Envfile")))
       config.respond_to?(:from_envfile)
     end
+
+    it "raises EnvfileNotFound if file does not exist" do
+      expect { dsl.eval(fixture_path("notfound")) }.to raise_error(Envy::EnvfileNotFound)
+    end
   end
 end

@@ -3,6 +3,12 @@ require "envy/environment"
 require "envy/dsl"
 
 module Envy
+  class Error < StandardError
+  end
+
+  class EnvfileNotFound < Error
+  end
+
   attr_writer :env
 
   def env
