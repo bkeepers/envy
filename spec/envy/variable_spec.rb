@@ -7,24 +7,24 @@ describe Envy::Variable do
     Envy::Variable.new(environment, :test, options) { Time.now.to_s }
   end
 
-  describe "accessor" do
+  describe "value" do
     it "memoizes default values" do
-      expect(subject.accessor).to equal(subject.accessor)
+      expect(subject.value).to equal(subject.value)
     end
 
     it "memoizes cast values" do
       environment.env["TEST"] = "42"
-      value = subject.accessor
+      value = subject.value
       expect(subject).not_to receive(:cast)
-      expect(subject.accessor).to equal(value)
+      expect(subject.value).to equal(value)
     end
   end
 
   describe "reset" do
     it "clears memoized value" do
-      value = subject.accessor
+      value = subject.value
       subject.reset
-      expect(subject.accessor).not_to equal(value)
+      expect(subject.value).not_to equal(value)
     end
   end
 
@@ -37,7 +37,7 @@ describe Envy::Variable do
       environment.env["TEST"] = "not used"
       environment.env["OTHER_VAR"] = "the real slim shady"
 
-      expect(subject.accessor).to eql("the real slim shady")
+      expect(subject.value).to eql("the real slim shady")
     end
   end
 end
