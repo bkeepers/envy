@@ -23,7 +23,7 @@ describe Envy::DSL do
   end
 
   describe "integer" do
-    before { dsl.integer :int }
+    before { dsl.integer :int, :required => false }
 
     it "returns nil if not defined" do
       expect(config.int).to be(nil)
@@ -41,7 +41,7 @@ describe Envy::DSL do
   end
 
   describe "boolean" do
-    before { dsl.boolean :bool }
+    before { dsl.boolean :bool, :required => false }
 
     ["0", "false", false, "off", "no", "f", "n"].each do |input|
       it "casts #{input.inspect} to false" do
@@ -71,28 +71,27 @@ describe Envy::DSL do
   end
 
   describe "uri" do
+    before { dsl.uri :app_url, :required => false }
+
     it "returns nil if not defined" do
-      dsl.uri :app_url
       expect(config.app_url).to be(nil)
     end
 
     it "returns a URI" do
       env["APP_URL"] = "http://example.com"
-      dsl.uri :app_url
       expect(config.app_url).to be_instance_of(Addressable::URI)
       expect(config.app_url.to_s).to eq("http://example.com")
     end
   end
 
   describe "decimal" do
+    before { dsl.decimal :price, :required => false }
     it "returns nil if not defined" do
-      dsl.decimal :price
       expect(config.price).to be(nil)
     end
 
     it "returns a decimal" do
       env["PRICE"] = "1.23"
-      dsl.decimal :price
       expect(config.price).to be_instance_of(BigDecimal)
       expect(config.price).to eq(BigDecimal.new("1.23"))
     end

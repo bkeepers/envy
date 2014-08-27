@@ -11,7 +11,7 @@ module Envy
     def initialize(environment, name, options = {}, &default)
       @environment = environment
       @name = name
-      @options = options
+      @options = {:required => true}.merge(options)
       @default = default || options[:default]
     end
 
