@@ -13,4 +13,13 @@ describe Envy::Environment do
       expect(subject.configure(fixture_path("Envfile"))).to be(subject)
     end
   end
+
+  describe "reset" do
+    it "resets each variable" do
+      variable = Envy::Variable.new(subject, :test)
+      subject.add variable
+      expect(variable).to receive(:reset)
+      subject.reset
+    end
+  end
 end

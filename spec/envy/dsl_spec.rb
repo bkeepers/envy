@@ -23,7 +23,7 @@ describe Envy::DSL do
   end
 
   describe "integer" do
-    before { dsl.integer :int }
+    before { dsl.integer :int, :required => false }
 
     it "returns nil if not defined" do
       expect(config.int).to be(nil)
@@ -41,23 +41,23 @@ describe Envy::DSL do
   end
 
   describe "boolean" do
-    before { dsl.boolean :bool }
+    before { dsl.boolean :bool, :required => false }
 
-    ["0", "false", false].each do |input|
+    ["0", "false", false, "off", "no", "f", "n"].each do |input|
       it "casts #{input.inspect} to false" do
         env["BOOL"] = input
         expect(config.bool?).to be(false)
       end
     end
 
-    ["1", "true", true].each do |input|
+    ["1", "true", true, "on", "yes", "t", "y"].each do |input|
       it "casts #{input.inspect} to true" do
         env["BOOL"] = input
         expect(config.bool?).to be(true)
       end
     end
 
-    [nil, ''].each do |input|
+    [nil, "", " "].each do |input|
       it "casts #{input.inspect} to nil" do
         env["BOOL"] = input
         expect(config.bool?).to be(nil)
@@ -67,6 +67,33 @@ describe Envy::DSL do
     it "raises an error if it can't cast it" do
       env["BOOL"] = "nope"
       expect { config.bool? }.to raise_error(ArgumentError, /invalid value for boolean/)
+    end
+  end
+
+  describe "uri" do
+    before { dsl.uri :app_url, :required => false }
+
+    it "returns nil if not defined" do
+      expect(config.app_url).to be(nil)
+    end
+
+    it "returns a URI" do
+      env["APP_URL"] = "http://example.com"
+      expect(config.app_url).to be_instance_of(Addressable::URI)
+      expect(config.app_url.to_s).to eq("http://example.com")
+    end
+  end
+
+  describe "decimal" do
+    before { dsl.decimal :price, :required => false }
+    it "returns nil if not defined" do
+      expect(config.price).to be(nil)
+    end
+
+    it "returns a decimal" do
+      env["PRICE"] = "1.23"
+      expect(config.price).to be_instance_of(BigDecimal)
+      expect(config.price).to eq(BigDecimal.new("1.23"))
     end
   end
 

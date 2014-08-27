@@ -3,19 +3,16 @@ module Envy
   #
   # Boolean-ish values get cast into true/false boolean values.
   class Boolean < Variable
-    VALUES = {
-      nil => nil, '' => nil,
-      '0' => false, 'false' => false, false => false,
-      '1' => true, 'true' => true, true => true
-    }
-
-    def accessor_name
+    def method_name
       "#{name}?"
     end
 
     def cast(value)
-      VALUES.fetch(value) do
-        raise ArgumentError, "invalid value for boolean: #{value.inspect}"
+      case value
+      when true, /\A(y(es)?|t(rue)?|on|1)\z/i then true
+      when false, /\A(n(o)?|f(alse)?|off|0)\z/i then false
+      when nil, /\A\s*\z/ then nil
+      else raise ArgumentError, "invalid value for boolean: #{value.inspect}"
       end
     end
   end

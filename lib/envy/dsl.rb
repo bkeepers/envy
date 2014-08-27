@@ -1,6 +1,8 @@
 require "envy/variable"
 require "envy/integer"
 require "envy/boolean"
+require "envy/uri"
+require "envy/decimal"
 
 module Envy
   class DSL
@@ -24,6 +26,14 @@ module Envy
 
     def boolean(name, options = {}, &default)
       add Boolean.new(environment, name, options, &default)
+    end
+
+    def uri(name, options = {}, &default)
+      add URI.new(environment, name, options, &default)
+    end
+
+    def decimal(name, options = {}, &default)
+      add Decimal.new(environment, name, options, &default)
     end
 
     def eval(filename)

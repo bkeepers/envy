@@ -7,7 +7,7 @@ module Envy
     def initialize(env = ENV)
       @env = env
       @variables = {}
-      extend accessors
+      extend readers
     end
 
     def configure(filename = "Envfile")
@@ -15,13 +15,13 @@ module Envy
       self
     end
 
-    def accessors
-      @accessors ||= Module.new
+    def readers
+      @readers ||= Module.new
     end
 
     def add(variable)
       @variables[variable.name] = variable
-      accessors.send :define_method, variable.accessor_name, &variable.method(:accessor)
+      readers.send :define_method, variable.method_name, &variable.method(:value)
     end
 
     def [](name)
@@ -30,6 +30,11 @@ module Envy
 
     def each(&block)
       @variables.values.each(&block)
+    end
+
+    # Reset memoized values for all variables
+    def reset
+      @variables.values.each(&:reset)
     end
   end
 end

@@ -7,10 +7,11 @@ module Envy
     # options[:description] - a friendly description of the environment variable
     # options[:required]    - a boolean indiciting if a value is required
     # options[:default]     - a default value or Proc if the variable is not set
+    # options[:from]        - the environment variable to fetch the value from
     def initialize(environment, name, options = {}, &default)
       @environment = environment
       @name = name
-      @options = options
+      @options = {:required => true}.merge(options)
       @default = default || options[:default]
     end
 
@@ -43,17 +44,19 @@ module Envy
       end
     end
 
-    # The name of the accessor method that will be defined on the `environment`
+    # The name of the reader method that will be defined on the `environment`
     # instance. Override in subclasses to customize.
-    def accessor_name
+    def method_name
       name
     end
 
     # The method that gets defined on the environment to read this variable.
     #
     # Returns the cast environment variable.
-    def accessor
-      cast(value).tap do |result|
+    def value
+      return @value if defined?(@value)
+
+      @value = cast(fetch).tap do |result|
         raise ArgumentError, "#{name} is required" if required? && result.nil?
       end
     end
@@ -61,8 +64,13 @@ module Envy
     # Fetch the value from the environment
     #
     # Returns a string from the environment variable, or the default value.
-    def value
-      environment.env.fetch(name.to_s.upcase) { default }
+    def fetch
+      environment.env.fetch(from) { default }
+    end
+
+    # The name of the environment variable to fetch the value from.
+    def from
+      @from ||= options.fetch(:from) { name.to_s.upcase }
     end
 
     # Override in subclasses to perform casting.
@@ -70,6 +78,11 @@ module Envy
     # value - A string from the environment, or the default value
     def cast(value)
       value
+    end
+
+    # Unset the memoized value.
+    def reset
+      remove_instance_variable(:@value)
     end
   end
 end
