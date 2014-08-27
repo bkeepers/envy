@@ -1,6 +1,7 @@
 require "spec_helper"
 require "rails"
 require "envy/rails"
+require "rake"
 
 describe Envy::Railtie do
   let(:envfile) { fixture_path("Envfile") }
