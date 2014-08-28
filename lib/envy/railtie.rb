@@ -1,10 +1,7 @@
 module Envy
   class Railtie < Rails::Railtie
-    def envfile
-      ENV["ENVFILE"] || Rails.root.join('Envfile')
-    end
-
     config.before_configuration do |app|
+      envfile = ENV["ENVFILE"] || Rails.root.join('Envfile')
       begin
         Envy.env = Envy::Environment.new(ENV).configure(envfile)
       rescue Envy::EnvfileNotFound => e
