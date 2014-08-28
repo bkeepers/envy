@@ -7,3 +7,5 @@ group :guard do
   gem 'guard-bundler'
   gem 'rb-fsevent'
 end
+
+gem "byebug"
