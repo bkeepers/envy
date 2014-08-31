@@ -5,7 +5,7 @@ task :env do
     next unless description
 
     puts description.gsub(/^/m, "# ")
-    puts "# #{variable.name.to_s.upcase}=#{variable.default}"
+    puts "# #{variable.from}=#{variable.default}"
     puts
   end
 end
