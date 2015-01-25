@@ -38,7 +38,7 @@ describe Envy::Railtie do
 
     it "raises an error if does not exist" do
       ENV["ENVFILE"] = fixture_path("nope")
-      expect { application }.to raise_error(Envy::EnvfileNotFound)
+      expect { application }.to raise_error(Errno::ENOENT)
     end
   end
 

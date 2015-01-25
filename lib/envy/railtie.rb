@@ -11,7 +11,7 @@ module Envy
       envfile = ENV["ENVFILE"] || Rails.root.join('Envfile')
       begin
         Envy.env = Envy::Environment.new(ENV).configure(envfile)
-      rescue Envy::EnvfileNotFound => e
+      rescue Errno::ENOENT => e
         # re-raise if ENVFILE is explicitly defined.
         raise if ENV["ENVFILE"]
       end
