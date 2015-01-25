@@ -13,7 +13,7 @@ describe Envy::Variable do
     end
 
     it "memoizes cast values" do
-      environment.env["TEST"] = "42"
+      environment.source["TEST"] = "42"
       value = subject.value
       expect(subject).not_to receive(:cast)
       expect(subject.value).to equal(value)
@@ -34,8 +34,8 @@ describe Envy::Variable do
     end
 
     it "fetches value from given name" do
-      environment.env["TEST"] = "not used"
-      environment.env["OTHER_VAR"] = "the real slim shady"
+      environment.source["TEST"] = "not used"
+      environment.source["OTHER_VAR"] = "the real slim shady"
 
       expect(subject.value).to eql("the real slim shady")
     end
