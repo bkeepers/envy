@@ -39,17 +39,17 @@ desc "Boolean attribute specifying whether the site is in SSL mode."
 boolean :ssl, :default => true
 ```
 
-Every variable that is declared gets a reader method defined on `Envy.env`. This reader method fetches the value from `ENV`, or falls back to a `:default` if one is defined.
+Every variable that is declared gets a reader method defined on `$ENV`. This reader method fetches the value from `ENV`, or falls back to a `:default` if one is defined.
 
 ```ruby
 # config/application.rb
-config.middleware.use RequestTimeoutMiddleware, Envy.env.request_timeout
+config.middleware.use RequestTimeoutMiddleware, $ENV.request_timeout
 
 config.action_mailer.default_options = {
-  from: Envy.env.support_email
+  from: $ENV.support_email
 }
 
-config.force_ssl = Envy.env.ssl?
+config.force_ssl = $ENV.ssl?
 ```
 
 Variables can then be overridden in the environment at runtime using the variable name in `SCREAMING_SNAKE_CASE`:
@@ -68,7 +68,7 @@ Envy supports type casting of variable values.
 string :support_email, :default => "support@example.com"
 ```
 
-A `string` is the simplest variable that can be defined. It defines a reader on `Envy.env.host_name`, returning the default value if `ENV["HOST_NAME"]` is not set.
+A `string` is the simplest variable that can be defined. It defines a reader on `$ENV.host_name`, returning the default value if `ENV["HOST_NAME"]` is not set.
 
 ### `boolean`
 
@@ -76,7 +76,7 @@ A `string` is the simplest variable that can be defined. It defines a reader on 
 boolean :ssl, :default => true
 ```
 
-`boolean` defines a reader `Envy.env.ssl?` and cast the values "0", "1", "true", or "false" into boolean values in Ruby.
+`boolean` defines a reader `$ENV.ssl?` and cast the values "0", "1", "true", or "false" into boolean values in Ruby.
 
 ### `integer`
 
@@ -84,7 +84,7 @@ boolean :ssl, :default => true
 integer :request_timeout, :default => 10
 ```
 
-`integer` defines a reader `Envy.env.request_timeout` which validates and casts environment variables to an integer.
+`integer` defines a reader `$ENV.request_timeout` which validates and casts environment variables to an integer.
 
 ## Options
 
