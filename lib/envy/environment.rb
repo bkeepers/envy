@@ -2,10 +2,10 @@ module Envy
   class Environment
     include Enumerable
 
-    attr_reader :env
+    attr_reader :source
 
-    def initialize(env = ENV)
-      @env = env
+    def initialize(source = ENV)
+      @source = source
       @variables = {}
       extend readers
     end

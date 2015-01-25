@@ -13,7 +13,7 @@ describe Envy::Railtie do
 
   after do
     ENV.replace @env
-    Envy.env = nil
+    Envy.environment = nil
   end
 
   it "defines rake tasks" do
@@ -23,14 +23,14 @@ describe Envy::Railtie do
 
   it "sets $ENV" do
     application
-    expect($ENV).to be(Envy.env)
+    expect($ENV).to be(Envy.environment)
   end
 
   context "when Envfile exists" do
     it "evalates the Envfile" do
       # Rails uses existance of config.ru and falls back to Dir.pwd to set Rails.root
       Dir.chdir(fixture_path) { application }
-      expect(Envy.env).to respond_to(:from_envfile)
+      expect(Envy.environment).to respond_to(:from_envfile)
     end
   end
 
@@ -38,7 +38,7 @@ describe Envy::Railtie do
     it "evalates the Envfile" do
       ENV["ENVFILE"] = fixture_path("Envfile")
       application
-      expect(Envy.env).to respond_to(:from_envfile)
+      expect(Envy.environment).to respond_to(:from_envfile)
     end
 
     it "raises an error if does not exist" do

@@ -12,10 +12,10 @@ module Envy
     end
 
     config.before_configuration do |app|
-      $ENV = Envy.env
+      $ENV = Envy.environment
 
       begin
-        Envy.env.configure(envfile)
+        Envy.environment.configure(envfile)
       rescue Errno::ENOENT => e
         # re-raise if ENVFILE is explicitly defined.
         raise if ENV["ENVFILE"]

@@ -65,7 +65,7 @@ module Envy
     #
     # Returns a string from the environment variable, or the default value.
     def fetch
-      environment.env.fetch(from) { default }
+      environment.source.fetch(from) { default }
     end
 
     # The name of the environment variable to fetch the value from.
