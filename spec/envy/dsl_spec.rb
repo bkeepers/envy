@@ -156,8 +156,8 @@ describe Envy::DSL do
       config.respond_to?(:from_envfile)
     end
 
-    it "raises EnvfileNotFound if file does not exist" do
-      expect { dsl.eval(fixture_path("notfound")) }.to raise_error(Envy::EnvfileNotFound)
+    it "raises Errno::ENOENT if file does not exist" do
+      expect { dsl.eval(fixture_path("notfound")) }.to raise_error(Errno::ENOENT)
     end
   end
 end
