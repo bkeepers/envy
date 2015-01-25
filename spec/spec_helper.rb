@@ -1,8 +1,8 @@
 require "envy"
 
 module Fixtures
-  def fixture_path(name)
-    File.join(File.expand_path('../fixtures', __FILE__), name)
+  def fixture_path(*args)
+    File.join(File.expand_path('../fixtures', __FILE__), *args)
   end
 end
 
