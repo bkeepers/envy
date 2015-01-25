@@ -14,11 +14,15 @@ Envy reads the schema from an `Envfile` when an application bootstraps and:
 
 Add this line to your application's Gemfile:
 
-    gem "envy"
+```ruby
+gem "envy"
+```
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 ## Usage
 
