@@ -3,10 +3,10 @@ require "envy/environment"
 require "envy/dsl"
 
 module Envy
-  attr_writer :env
+  attr_writer :environment
 
-  def env
-    @env ||= Envy::Environment.new
+  def environment
+    @environment ||= Envy::Environment.new
   end
 
   extend self
