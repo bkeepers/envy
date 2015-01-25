@@ -12,6 +12,8 @@ module Envy
     end
 
     config.before_configuration do |app|
+      $ENV = Envy.env
+
       begin
         Envy.env.configure(envfile)
       rescue Errno::ENOENT => e

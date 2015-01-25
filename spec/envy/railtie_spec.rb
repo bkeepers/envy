@@ -21,6 +21,11 @@ describe Envy::Railtie do
     expect(Rake.application["env"]).to be_instance_of(Rake::Task)
   end
 
+  it "sets $ENV" do
+    application
+    expect($ENV).to be(Envy.env)
+  end
+
   context "when Envfile exists" do
     it "evalates the Envfile" do
       # Rails uses existance of config.ru and falls back to Dir.pwd to set Rails.root
