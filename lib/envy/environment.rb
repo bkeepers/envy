@@ -47,5 +47,12 @@ module Envy
     def reset
       @variables.values.each(&:reset)
     end
+
+    def validate
+      missing = @variables.values.select(&:missing?)
+      unless missing.empty?
+        raise ArgumentError, "Missing environment variables: #{missing.map(&:from).join(', ')}"
+      end
+    end
   end
 end

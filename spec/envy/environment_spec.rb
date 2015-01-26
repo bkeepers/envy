@@ -27,4 +27,17 @@ describe Envy::Environment do
       subject.reset
     end
   end
+
+  describe "validate" do
+    it "does not raise an error if all required variables are present" do
+      subject.configure { string :app_url }
+      subject.source["APP_URL"] = "https://example.com"
+      subject.validate
+    end
+
+    it "raises an ArgumentError if required variables are missing" do
+      subject.configure { string :app_url }
+      expect { subject.validate }.to raise_error(ArgumentError, /Missing.*APP_URL/)
+    end
+  end
 end
