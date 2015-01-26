@@ -37,7 +37,7 @@ describe Envy::Environment do
 
     it "raises an ArgumentError if required variables are missing" do
       subject.configure { string :app_url }
-      expect { subject.validate }.to raise_error(ArgumentError, /Missing.*APP_URL/)
+      expect { subject.validate }.to raise_error(RuntimeError, /Missing.*APP_URL/)
     end
   end
 end

@@ -30,7 +30,7 @@ describe Envy::Railtie do
     Envy.environment.configure { string :missing }
     expect {
       ActiveSupport.run_load_hooks(:after_initialize, application)
-    }.to raise_error(ArgumentError, /MISSING/)  
+    }.to raise_error(RuntimeError, /MISSING/)  
   end
 
   context "when Envfile exists" do
