@@ -10,11 +10,16 @@ module Envy
       extend readers
     end
 
-    # Evaluate the given Envfile
+    # Configure the environment.
+    #
+    # filename - An optional String path to an Envfile to evaluate.
+    # block - An optional block to evaluate.
     #
     # Returns this Environment instance
-    def configure(filename = "Envfile")
-      Envy::DSL.new(self).eval(filename)
+    def configure(filename = nil, &block)
+      dsl = Envy::DSL.new(self)
+      dsl.eval(filename) if filename
+      dsl.instance_eval(&block) if block
       self
     end
 

@@ -12,6 +12,11 @@ describe Envy::Environment do
     it "returns the environment" do
       expect(subject.configure(fixture_path("Envfile"))).to be(subject)
     end
+
+    it "evaluates the block" do
+      subject.configure { string :from_block }
+      expect(subject).to respond_to(:from_block)
+    end
   end
 
   describe "reset" do
