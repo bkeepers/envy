@@ -1,5 +1,7 @@
 # Envy
 
+**Heads Up!** _This project is currently in alpha. It is not actively used or maintained, so proceed with caution!_
+
 a schema describing and validating the environment variables needed by an application.
 
 Envy reads the schema from an `Envfile` when an application bootstraps and:
@@ -15,7 +17,7 @@ Envy reads the schema from an `Envfile` when an application bootstraps and:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "envy"
+gem "envy", github: "bkeepers/envy"
 ```
 
 And then execute:
