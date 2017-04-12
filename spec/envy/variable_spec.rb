@@ -40,4 +40,45 @@ describe Envy::Variable do
       expect(subject.value).to eql("the real slim shady")
     end
   end
+
+  describe "required?" do
+    it "defaults to true" do
+      expect(Envy::Variable.new(environment, :test)).to be_required
+    end
+
+    it "is true if symbol returns true" do
+      expect(environment).to receive(:conditional?).and_return(true)
+      variable = Envy::Variable.new(environment, :test, :required => :conditional?)
+      expect(variable).to be_required
+    end
+
+    it "is false if symbol returns false" do
+      expect(environment).to receive(:conditional?).and_return(false)
+      variable = Envy::Variable.new(environment, :test, :required => :conditional?)
+      expect(variable).not_to be_required
+    end
+  end
+
+  describe "missing?" do
+    it "returns true if required and value is nil" do
+      variable = Envy::Variable.new(environment, :test)
+      expect(variable).to be_missing
+    end
+
+    it "returns false if not required" do
+      variable = Envy::Variable.new(environment, :test, :required => false)
+      expect(variable).not_to be_missing
+    end
+
+    it "returns false if a default is defined" do
+      variable = Envy::Variable.new(environment, :test) { "default" }
+      expect(variable).not_to be_missing
+    end
+
+    it "returns false if a value is provided" do
+      variable = Envy::Variable.new(environment, :test)
+      environment.source["TEST"] = "value"
+      expect(variable).not_to be_missing
+    end
+  end
 end

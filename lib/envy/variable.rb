@@ -54,11 +54,12 @@ module Envy
     #
     # Returns the cast environment variable.
     def value
-      return @value if defined?(@value)
+      @value ||= cast(fetch)
+    end
 
-      @value = cast(fetch).tap do |result|
-        raise ArgumentError, "#{name} is required" if required? && result.nil?
-      end
+    # Returns true if the variable is required an a value is not provided.
+    def missing?
+      required? && fetch.nil?
     end
 
     # Fetch the value from the environment

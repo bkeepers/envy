@@ -92,16 +92,16 @@ integer :request_timeout, :default => 10
 
 ### `:required`
 
-The `:required` option can be used to enforce that a variable be defined by the environment.
+All defined variables without a default value are required. When the `Envfile` is loaded, it will raise an exception if the required keys are not set.
+
+```
+Missing environment variables: ENCRYPTION_KEY
+```
+
+The `:required` option can be set to `false` for optional values.
 
 ```ruby
-string :encryption_key, :required => true
-```
-
-When the `Envfile` is loaded, it will raise an exception if the required keys are not set.
-
-```
-ArgumentError: ENCRYPTION_KEY must be set in `ENV`
+string :encryption_key, :required => false
 ```
 
 ### `:default`

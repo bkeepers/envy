@@ -11,7 +11,7 @@ module Envy
       ENV["ENVFILE"] || Rails.root.join('Envfile')
     end
 
-    config.before_configuration do |app|
+    config.before_configuration do
       $ENV = Envy.environment
 
       begin
@@ -20,6 +20,10 @@ module Envy
         # re-raise if ENVFILE is explicitly defined.
         raise if ENV["ENVFILE"]
       end
+    end
+
+    config.after_initialize do
+      Envy.environment.validate
     end
 
     rake_tasks do
