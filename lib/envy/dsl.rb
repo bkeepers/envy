@@ -10,22 +10,21 @@ module Envy
 
     def initialize(environment)
       @environment = environment
+
+      type :string,  Envy::Variable
+      type :boolean, Envy::Boolean
+      type :integer, Envy::Integer
+    end
+
+    def type(type_name, type_class)
+      singleton = class << self; self; end;
+      singleton.send :define_method, type_name do |name, *args, &default|
+        add type_class.new(environment, name, *args, &default)
+      end
     end
 
     def desc(description)
       @last_description = description
-    end
-
-    def string(name, options = {}, &default)
-      add Variable.new(environment, name, options, &default)
-    end
-
-    def integer(name, options = {}, &default)
-      add Integer.new(environment, name, options, &default)
-    end
-
-    def boolean(name, options = {}, &default)
-      add Boolean.new(environment, name, options, &default)
     end
 
     def uri(name, options = {}, &default)
