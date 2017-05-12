@@ -70,7 +70,7 @@ Envy supports type casting of variable values.
 string :support_email, :default => "support@example.com"
 ```
 
-A `string` is the simplest variable that can be defined. It defines a reader on `$ENV.host_name`, returning the default value if `ENV["HOST_NAME"]` is not set.
+A `string` is the simplest variable that can be defined. It defines a reader on `$ENV.support_email`, returning the default value if `ENV["SUPPORT_EMAIL"]` is not set.
 
 ### `boolean`
 
