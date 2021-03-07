@@ -93,7 +93,7 @@ describe Envy::DSL do
     it "returns a decimal" do
       env["PRICE"] = "1.23"
       expect(config.price).to be_instance_of(BigDecimal)
-      expect(config.price).to eq(BigDecimal.new("1.23"))
+      expect(config.price).to eq(BigDecimal("1.23"))
     end
   end
 
