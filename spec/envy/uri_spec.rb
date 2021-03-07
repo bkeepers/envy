@@ -1,10 +1,10 @@
 require "spec_helper"
 
-describe Envy::URI do
+describe Envy::Type::URI do
   let(:environment) { Envy::Environment.new({}) }
 
   describe "cast" do
-    subject { Envy::URI.new(environment, :app_url) }
+    subject { described_class.new(environment, :app_url) }
 
     it "returns Addressable::URI" do
       uri = subject.cast("https://example.com")
@@ -13,7 +13,7 @@ describe Envy::URI do
 
     context "with options[:template]" do
       let(:template) { "s3://{key}:{secret}@{bucket}{/path}" }
-      subject { Envy::URI.new(environment, :s3_url, :template => template) }
+      subject { described_class.new(environment, :s3_url, :template => template) }
 
       it "returns the parsed URI" do
         uri = subject.cast("s3://mykey:mysecret@mybucket/mypath")
