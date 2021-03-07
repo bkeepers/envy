@@ -129,7 +129,7 @@ my_type :var_name
 All defined variables without a default value are required. When the `Envfile` is loaded, it will raise an exception if the required keys are not set.
 
 ```
-Missing environment variables: ENCRYPTION_KEYmar
+Missing environment variables: ENCRYPTION_KEY
 ```
 
 The `:required` option can be set to `false` for optional values.
