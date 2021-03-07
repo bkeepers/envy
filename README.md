@@ -156,14 +156,26 @@ The `:default` can be used to set a default value when the variable is not defin
 integer :request_timeout, default: 10
 ```
 
-If logic is required to set a default, a block can be passed to a declaration and it will be called if a variable is not set in `ENV`.
+If logic is required to set a default, a lambda can be passed and it will be called if a variable is not set in `ENV`.
 
 ```ruby
 boolean :check_for_internet_connection?, default: false
 
-boolean :online do
-  check_for_internet_connection? ? Site.google_reachable? : true
+boolean :online, default: -> { check_for_internet_connection? ? Site.google_reachable? : true }
 end
+```
+
+### Transform block
+
+Pass a block to a variable definition and it will be called to transform the value.
+
+```ruby
+string :admin_ids do |value|
+  value.split(",").map(&:to_i)
+end
+# >> ENV["ADMIN_IDS"] = "1,2,3"
+# >> $ENVY.admin_ids
+# => [1, 2, 3]
 ```
 
 ## Contributing

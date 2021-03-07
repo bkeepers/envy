@@ -20,8 +20,8 @@ module Envy
 
     def type(type_name, type_class)
       singleton = class << self; self; end;
-      singleton.send :define_method, type_name do |name, **args, &default|
-        add type_class.new(environment, name, description: last_description, **args, &default)
+      singleton.send :define_method, type_name do |name, **args, &transform|
+        environment.add type_class.new(environment, name, description: last_description, **args, &transform)
       end
     end
 
@@ -35,12 +35,16 @@ module Envy
     end
     public :eval
 
-    def add(variable)
-      environment.add variable
-    end
-
     def last_description
       @last_description.tap { @last_description = nil }
+    end
+
+    def method_missing(symbol, *args, &block)
+      environment.send(symbol, *args, &block)
+    end
+
+    def respond_to?(symbol, include_all = false)
+      super || environment.respond_to?(symbol, include_all)
     end
   end
 end

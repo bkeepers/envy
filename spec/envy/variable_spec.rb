@@ -4,7 +4,7 @@ describe Envy::Type::Variable do
   let(:environment) { Envy::Environment.new({}) }
   let(:options) { {} }
   subject do
-    described_class.new(environment, :test, options) { Time.now.to_s }
+    described_class.new(environment, :test, default: -> { rand }, **options)
   end
 
   describe "value" do
@@ -71,7 +71,7 @@ describe Envy::Type::Variable do
     end
 
     it "returns false if a default is defined" do
-      variable = described_class.new(environment, :test) { "default" }
+      variable = described_class.new(environment, :test, default: "default")
       expect(variable).not_to be_missing
     end
 

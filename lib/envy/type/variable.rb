@@ -11,13 +11,14 @@ module Envy
       #   required:    - a boolean indiciting if a value is required
       #   default:     - a default value or Proc if the variable is not set
       #   from:        - the name of the environment variable to fetch the value from
-      def initialize(environment, name, description: nil, required: true, default: nil, from: name.to_s.upcase, &default_block)
+      def initialize(environment, name, description: nil, required: true, default: nil, from: name.to_s.upcase, &transform)
         @environment = environment
         @name = name
         @description = description
         @required = required
-        @default = default_block || default
+        @default = default
         @from = from
+        @transform = transform || lambda { |value| value }
       end
 
       # Determine if this variable is required.
@@ -33,20 +34,12 @@ module Envy
       #
       # Returns true if the variable is required.
       def required?
-        if @required.respond_to?(:to_proc)
-          environment.instance_eval(&@required)
-        else
-          !!@required
-        end
+        !!resolve_option(@required)
       end
 
       # The default value for this variable when it is not set in the environment.
       def default
-        if @default.respond_to?(:to_proc)
-          environment.instance_eval(&@default)
-        else
-          @default
-        end
+        resolve_option(@default)
       end
 
       # The name of the reader method that will be defined on the `environment`
@@ -59,7 +52,7 @@ module Envy
       #
       # Returns the cast environment variable.
       def value
-        @value ||= cast(fetch)
+        @value ||= resolve_option(@transform, cast(fetch))
       end
 
       # Returns true if the variable is required an a value is not provided.
@@ -84,6 +77,18 @@ module Envy
       # Unset the memoized value.
       def reset
         remove_instance_variable(:@value)
+      end
+
+      private
+
+      def resolve_option(option, *args)
+        if option.respond_to?(:call)
+          option.call(*args)
+        elsif option.respond_to?(:to_proc)
+          option.to_proc.call(environment, *args)
+        else
+          option
+        end
       end
     end
   end

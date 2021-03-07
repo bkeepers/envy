@@ -1,4 +1,5 @@
 require "envy"
+require "pry"
 
 module Fixtures
   def fixture_path(*args)
