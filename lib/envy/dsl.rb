@@ -1,8 +1,8 @@
 require "envy/type/variable"
-require "envy/type/integer"
 require "envy/type/boolean"
-require "envy/type/uri"
 require "envy/type/decimal"
+require "envy/type/integer"
+require "envy/type/uri"
 
 module Envy
   class DSL
@@ -13,7 +13,9 @@ module Envy
 
       type :string,  Envy::Type::Variable
       type :boolean, Envy::Type::Boolean
+      type :decimal, Envy::Type::Decimal
       type :integer, Envy::Type::Integer
+      type :uri,     Envy::Type::URI
     end
 
     def type(type_name, type_class)
@@ -25,14 +27,6 @@ module Envy
 
     def desc(description)
       @last_description = description
-    end
-
-    def uri(name, options = {}, &default)
-      add Type::URI.new(environment, name, options, &default)
-    end
-
-    def decimal(name, options = {}, &default)
-      add Type::Decimal.new(environment, name, options, &default)
     end
 
     def eval(filename)
