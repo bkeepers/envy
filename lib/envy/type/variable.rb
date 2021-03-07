@@ -12,7 +12,7 @@ module Envy
       def initialize(environment, name, options = {}, &default)
         @environment = environment
         @name = name
-        @options = {:required => true}.merge(options)
+        @options = {required: true}.merge(options)
         @default = default || options[:default]
       end
 
@@ -22,10 +22,10 @@ module Envy
       # in the environment.
       #
       #     desc "Should SSL be required?"
-      #     boolean :force_ssl, :default => true
+      #     boolean :force_ssl, default: true
       #
       #     desc "PEM file with encryption keys"
-      #     string :pem, :required => :force_ssl?
+      #     string :pem, required: :force_ssl?
       #
       # Returns true if the variable is required.
       def required?

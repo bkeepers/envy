@@ -13,7 +13,7 @@ describe Envy::Type::URI do
 
     context "with options[:template]" do
       let(:template) { "s3://{key}:{secret}@{bucket}{/path}" }
-      subject { described_class.new(environment, :s3_url, :template => template) }
+      subject { described_class.new(environment, :s3_url, template: template) }
 
       it "returns the parsed URI" do
         uri = subject.cast("s3://mykey:mysecret@mybucket/mypath")

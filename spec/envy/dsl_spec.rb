@@ -23,7 +23,7 @@ describe Envy::DSL do
   end
 
   describe "integer" do
-    before { dsl.integer :int, :required => false }
+    before { dsl.integer :int, required: false }
 
     it "returns nil if not defined" do
       expect(config.int).to be(nil)
@@ -41,7 +41,7 @@ describe Envy::DSL do
   end
 
   describe "boolean" do
-    before { dsl.boolean :bool, :required => false }
+    before { dsl.boolean :bool, required: false }
 
     ["0", "false", false, "off", "no", "f", "n"].each do |input|
       it "casts #{input.inspect} to false" do
@@ -71,7 +71,7 @@ describe Envy::DSL do
   end
 
   describe "uri" do
-    before { dsl.uri :app_url, :required => false }
+    before { dsl.uri :app_url, required: false }
 
     it "returns nil if not defined" do
       expect(config.app_url).to be(nil)
@@ -85,7 +85,7 @@ describe Envy::DSL do
   end
 
   describe "decimal" do
-    before { dsl.decimal :price, :required => false }
+    before { dsl.decimal :price, required: false }
     it "returns nil if not defined" do
       expect(config.price).to be(nil)
     end
@@ -99,12 +99,12 @@ describe Envy::DSL do
 
   describe ":default option" do
     it "returns the default if no value is provided" do
-      dsl.string :blank, :default => "not blank"
+      dsl.string :blank, default: "not blank"
       expect(config.blank).to eql("not blank")
     end
 
     it "does not return the default if a value is provided" do
-      dsl.boolean :bool, :default => true
+      dsl.boolean :bool, default: true
       env["BOOL"] = 'false'
       expect(config.bool?).to be(false)
     end
@@ -120,7 +120,7 @@ describe Envy::DSL do
     end
 
     it "gets value from other variable with a symbol" do
-      dsl.string :default_from_other_var, :default => :other_var
+      dsl.string :default_from_other_var, default: :other_var
       expect(config).to receive(:other_var).and_return("default")
       expect(config.default_from_other_var).to eql("default")
     end
