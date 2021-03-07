@@ -20,8 +20,8 @@ module Envy
 
     def type(type_name, type_class)
       singleton = class << self; self; end;
-      singleton.send :define_method, type_name do |name, *args, &default|
-        add type_class.new(environment, name, *args, &default)
+      singleton.send :define_method, type_name do |name, **args, &default|
+        add type_class.new(environment, name, description: last_description, **args, &default)
       end
     end
 
@@ -36,7 +36,6 @@ module Envy
     public :eval
 
     def add(variable)
-      variable.options[:description] ||= last_description
       environment.add variable
     end
 

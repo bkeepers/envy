@@ -9,7 +9,7 @@ describe Envy::DSL do
     it "adds a description to a variable" do
       dsl.desc "a description"
       dsl.string :described
-      expect(config[:described].options[:description]).to eql("a description")
+      expect(config[:described].description).to eql("a description")
     end
   end
 

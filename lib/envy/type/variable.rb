@@ -1,24 +1,28 @@
 module Envy
   module Type
     class Variable
-      attr_reader :environment, :name, :options
+      attr_reader :environment, :name, :description, :from
 
-      # environment           - an instance of Envy::Environment
-      # name                  - the name of the environment variable
-      # options[:description] - a friendly description of the environment variable
-      # options[:required]    - a boolean indiciting if a value is required
-      # options[:default]     - a default value or Proc if the variable is not set
-      # options[:from]        - the environment variable to fetch the value from
-      def initialize(environment, name, options = {}, &default)
+      # environment  - an instance of Envy::Environment
+      # name         - the name of the environment variable
+      #
+      # Options:
+      #   description: - a friendly description of the environment variable
+      #   required:    - a boolean indiciting if a value is required
+      #   default:     - a default value or Proc if the variable is not set
+      #   from:        - the name of the environment variable to fetch the value from
+      def initialize(environment, name, description: nil, required: true, default: nil, from: name.to_s.upcase, &default_block)
         @environment = environment
         @name = name
-        @options = {required: true}.merge(options)
-        @default = default || options[:default]
+        @description = description
+        @required = required
+        @default = default_block || default
+        @from = from
       end
 
       # Determine if this variable is required.
       #
-      # If `options[:required]` is a Proc or symbol, it will be instance evaled
+      # If `required:` is a Proc or symbol, it will be instance evaled
       # in the environment.
       #
       #     desc "Should SSL be required?"
@@ -29,10 +33,10 @@ module Envy
       #
       # Returns true if the variable is required.
       def required?
-        if options[:required].respond_to?(:to_proc)
-          environment.instance_eval(&options[:required])
+        if @required.respond_to?(:to_proc)
+          environment.instance_eval(&@required)
         else
-          !!options[:required]
+          !!@required
         end
       end
 
@@ -67,12 +71,7 @@ module Envy
       #
       # Returns a string from the environment variable, or the default value.
       def fetch
-        environment.source.fetch(from) { default }
-      end
-
-      # The name of the environment variable to fetch the value from.
-      def from
-        @from ||= options.fetch(:from) { name.to_s.upcase }
+        environment.source.fetch(@from) { default }
       end
 
       # Override in subclasses to perform casting.
