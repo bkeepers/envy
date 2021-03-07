@@ -3,18 +3,18 @@ require "spec_helper"
 describe Envy::Environment do
   subject { Envy::Environment.new({}) }
 
-  describe "configure" do
+  describe "setup" do
     it "loads the envfile" do
-      subject.configure(fixture_path("Envfile"))
+      subject.setup(fixture_path("Envfile"))
       expect(subject).to respond_to(:from_envfile)
     end
 
     it "returns the environment" do
-      expect(subject.configure(fixture_path("Envfile"))).to be(subject)
+      expect(subject.setup(fixture_path("Envfile"))).to be(subject)
     end
 
     it "evaluates the block" do
-      subject.configure { string :from_block }
+      subject.setup { string :from_block }
       expect(subject).to respond_to(:from_block)
     end
   end
@@ -30,13 +30,13 @@ describe Envy::Environment do
 
   describe "validate" do
     it "does not raise an error if all required variables are present" do
-      subject.configure { string :app_url }
+      subject.setup { string :app_url }
       subject.source["APP_URL"] = "https://example.com"
       subject.validate
     end
 
     it "raises an ArgumentError if required variables are missing" do
-      subject.configure { string :app_url }
+      subject.setup { string :app_url }
       expect { subject.validate }.to raise_error(RuntimeError, /Missing.*APP_URL/)
     end
   end

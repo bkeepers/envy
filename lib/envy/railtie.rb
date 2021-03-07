@@ -15,7 +15,7 @@ module Envy
       $ENV = Envy.environment
 
       begin
-        Envy.environment.configure(envfile)
+        Envy.environment.setup(envfile)
       rescue Errno::ENOENT => e
         # re-raise if ENVFILE is explicitly defined.
         raise if ENV["ENVFILE"]

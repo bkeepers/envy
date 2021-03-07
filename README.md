@@ -2,7 +2,7 @@
 
 a schema describing and validating the environment variables needed by an application.
 
-## Why?
+Why?
 
 1. All available configuration is explicitly defined, documented and easily inspectable.
 2. All configuration can be overridden by environment variables, conforming to the [Twelve-Factor App](http://12factor.net/config) methodology.
@@ -59,6 +59,16 @@ Variables can be set in the environment at runtime using the variable name in `S
 
 ```
 $ REQUEST_TIMEOUT=30 rails server
+```
+
+### Manual setup
+
+Setup happens automatically in a Rails app. To use Envy outside of Rails, run:
+
+```ruby
+require 'envy'
+
+$ENV = Envy.environment.setup('Envfile')
 ```
 
 ## Types

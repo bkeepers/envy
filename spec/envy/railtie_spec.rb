@@ -27,10 +27,10 @@ describe Envy::Railtie do
   end
 
   it "validates declared variables after initialize" do
-    Envy.environment.configure { string :missing }
+    Envy.environment.setup { string :missing }
     expect {
       ActiveSupport.run_load_hooks(:after_initialize, application)
-    }.to raise_error(RuntimeError, /MISSING/)  
+    }.to raise_error(RuntimeError, /MISSING/)
   end
 
   context "when Envfile exists" do
