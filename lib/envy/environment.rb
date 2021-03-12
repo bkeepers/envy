@@ -5,7 +5,8 @@ module Envy
     def initialize(source = nil, &block)
       @source = source || block || ENV
       @variables = {}
-      extend readers
+      @readers = Module.new
+      extend @readers
     end
 
     # Setup the environment.
@@ -21,13 +22,9 @@ module Envy
       self
     end
 
-    def readers
-      @readers ||= Module.new
-    end
-
     def add(variable)
       @variables[variable.name] = variable
-      readers.send :define_method, variable.method_name, &variable.method(:value)
+      @readers.send :define_method, variable.method_name, &variable.method(:value)
     end
 
     def [](name)
