@@ -1,8 +1,10 @@
 require "spec_helper"
 
 describe Envy::Type::Variable do
-  let(:environment) { Envy::Environment.new({}) }
+  let(:env) { {} }
+  let(:environment) { Envy::Environment.new(env) }
   let(:options) { {} }
+
   subject do
     described_class.new(environment, :test, default: -> { rand }, **options)
   end
@@ -13,7 +15,7 @@ describe Envy::Type::Variable do
     end
 
     it "memoizes cast values" do
-      environment.source["TEST"] = "42"
+      env["TEST"] = "42"
       value = subject.value
       expect(subject).not_to receive(:cast)
       expect(subject.value).to equal(value)
@@ -34,8 +36,8 @@ describe Envy::Type::Variable do
     end
 
     it "fetches value from given name" do
-      environment.source["TEST"] = "not used"
-      environment.source["OTHER_VAR"] = "the real slim shady"
+      env["TEST"] = "not used"
+      env["OTHER_VAR"] = "the real slim shady"
 
       expect(subject.value).to eql("the real slim shady")
     end
@@ -77,7 +79,7 @@ describe Envy::Type::Variable do
 
     it "returns false if a value is provided" do
       variable = described_class.new(environment, :test)
-      environment.source["TEST"] = "value"
+      env["TEST"] = "value"
       expect(variable).not_to be_missing
     end
   end

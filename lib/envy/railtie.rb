@@ -12,10 +12,12 @@ module Envy
     end
 
     config.before_configuration do
-      $ENV = Envy.environment
+      $ENV = Envy.environment = Envy::Environment.new do |key|
+        ENV[key] || Rails.application.credentials[key.downcase]
+      end
 
       begin
-        Envy.environment.setup(envfile)
+        $ENV.setup(envfile)
       rescue Errno::ENOENT => e
         # re-raise if ENVFILE is explicitly defined.
         raise if ENV["ENVFILE"]
@@ -23,7 +25,7 @@ module Envy
     end
 
     config.after_initialize do
-      Envy.environment.validate
+      $ENV.validate
     end
 
     rake_tasks do

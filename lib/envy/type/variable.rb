@@ -64,7 +64,7 @@ module Envy
       #
       # Returns a string from the environment variable, or the default value.
       def fetch
-        environment.source.fetch(@from) { default }
+        environment.fetch(@from) { default }
       end
 
       # Override in subclasses to perform casting.

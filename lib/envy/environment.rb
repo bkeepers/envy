@@ -2,10 +2,8 @@ module Envy
   class Environment
     include Enumerable
 
-    attr_reader :source
-
-    def initialize(source = ENV)
-      @source = source
+    def initialize(source = nil, &block)
+      @source = source || block || ENV
       @variables = {}
       extend readers
     end
@@ -34,6 +32,14 @@ module Envy
 
     def [](name)
       @variables[name]
+    end
+
+    def fetch(key, default = nil, &block)
+      block ||= lambda { default }
+      value = @source[key]
+      value = default if value.nil?
+      value = block[key] if value.nil?
+      value
     end
 
     # Iterate over each defined environment variable.
