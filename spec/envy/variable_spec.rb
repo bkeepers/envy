@@ -48,15 +48,18 @@ describe Envy::Type::Variable do
       expect(described_class.new(environment, :test)).to be_required
     end
 
-    it "is true if symbol returns true" do
-      expect(environment).to receive(:conditional?).and_return(true)
+    it "returns result of symbol" do
       variable = described_class.new(environment, :test, required: :conditional?)
+
+      expect(environment).to receive(:conditional?).and_return(true)
       expect(variable).to be_required
+
+      expect(environment).to receive(:conditional?).and_return(false)
+      expect(variable).not_to be_required
     end
 
-    it "is false if symbol returns false" do
-      expect(environment).to receive(:conditional?).and_return(false)
-      variable = described_class.new(environment, :test, required: :conditional?)
+    it "calls block" do
+      variable = described_class.new(environment, :test, required: -> { false })
       expect(variable).not_to be_required
     end
   end
