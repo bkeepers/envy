@@ -18,6 +18,7 @@ module Envy
 
       begin
         $ENV.setup(envfile)
+
       rescue Errno::ENOENT => e
         # re-raise if ENVFILE is explicitly defined.
         raise if ENV["ENVFILE"]
@@ -25,7 +26,11 @@ module Envy
     end
 
     config.after_initialize do
-      $ENV.validate
+      begin
+        $ENV.validate
+      rescue => e
+        abort e.message
+      end
     end
 
     rake_tasks do

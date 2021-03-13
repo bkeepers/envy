@@ -44,7 +44,7 @@ describe Envy::Railtie do
     end
 
     it "validates declared variables" do
-      expect { subject }.to raise_error(RuntimeError, /FROM_ENVFILE/)
+      expect { silence { subject } }.to raise_error(SystemExit, /FROM_ENVFILE/)
     end
   end
 
