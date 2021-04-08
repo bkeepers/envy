@@ -3,13 +3,16 @@ require "spec_helper"
 describe Envy::Type::Variable do
   let(:env) { {} }
   let(:environment) { Envy::Environment.new(env) }
+  let(:dsl) { Envy::DSL.new(environment) }
   let(:options) { {} }
 
   subject do
-    described_class.new(environment, :test, default: -> { rand }, **options)
+    described_class.new(dsl, :test, **options)
   end
 
   describe "value" do
+    before { options[:default] = -> { rand } }
+
     it "memoizes default values" do
       expect(subject.value).to equal(subject.value)
     end
@@ -18,11 +21,13 @@ describe Envy::Type::Variable do
       env["TEST"] = "42"
       value = subject.value
       expect(subject).not_to receive(:cast)
-      expect(subject.value).to equal(value)
+      expect(subject.value).to be(value)
     end
   end
 
   describe "reset" do
+    before { options[:default] = -> { rand } }
+
     it "clears memoized value" do
       value = subject.value
       subject.reset
@@ -45,45 +50,43 @@ describe Envy::Type::Variable do
 
   describe "required?" do
     it "defaults to true" do
-      expect(described_class.new(environment, :test)).to be_required
+      expect(subject).to be_required
     end
 
     it "returns result of symbol" do
-      variable = described_class.new(environment, :test, required: :conditional?)
+      options[:required] = :conditional?
 
       expect(environment).to receive(:conditional?).and_return(true)
-      expect(variable).to be_required
+      expect(subject).to be_required
 
       expect(environment).to receive(:conditional?).and_return(false)
-      expect(variable).not_to be_required
+      expect(subject).not_to be_required
     end
 
     it "calls block" do
-      variable = described_class.new(environment, :test, required: -> { false })
-      expect(variable).not_to be_required
+      options[:required] = -> { false }
+      expect(subject).not_to be_required
     end
   end
 
   describe "missing?" do
     it "returns true if required and value is nil" do
-      variable = described_class.new(environment, :test)
-      expect(variable).to be_missing
+      expect(subject).to be_missing
     end
 
     it "returns false if not required" do
-      variable = described_class.new(environment, :test, required: false)
-      expect(variable).not_to be_missing
+      options[:required] = false
+      expect(subject).not_to be_missing
     end
 
     it "returns false if a default is defined" do
-      variable = described_class.new(environment, :test, default: "default")
-      expect(variable).not_to be_missing
+      options[:default] = "default"
+      expect(subject).not_to be_missing
     end
 
     it "returns false if a value is provided" do
-      variable = described_class.new(environment, :test)
       env["TEST"] = "value"
-      expect(variable).not_to be_missing
+      expect(subject).not_to be_missing
     end
   end
 end

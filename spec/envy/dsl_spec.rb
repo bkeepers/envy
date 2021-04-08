@@ -176,4 +176,45 @@ describe Envy::DSL do
       end.to raise_error(Errno::ENOENT)
     end
   end
+
+  describe "scope" do
+    it "define scoped accessors" do
+      envfile do
+        scope :aws do
+          string :access_key_id
+        end
+      end
+
+      env["AWS_ACCESS_KEY_ID"] = "xyz"
+      expect(envy.aws.access_key_id).to eq("xyz")
+    end
+
+    it "respects :from" do
+      envfile do
+        scope :recaptcha, from: "GOOGLE_RECAPTCHA" do
+          string :secret_key
+          string :public_key, from: "GRE_PUBLIC_KEY"
+        end
+      end
+
+      env["GOOGLE_RECAPTCHA_SECRET_KEY"] = "secret"
+      env["GRE_PUBLIC_KEY"] = "public"
+      expect(envy.recaptcha.secret_key).to eq("secret")
+      expect(envy.recaptcha.public_key).to eq("public")
+    end
+
+    it "does not accept default:" do
+      expect do
+        envfile { scope :test, default: "whoops!" }
+      end.to raise_error(ArgumentError, "unknown keyword: :default")
+    end
+
+    it "does not accept required:" do
+      expect do
+        envfile { scope :test, required: false }
+      end.to raise_error(ArgumentError, "unknown keyword: :required")
+    end
+
+    it "validates missing variables"
+  end
 end

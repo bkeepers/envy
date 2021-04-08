@@ -48,7 +48,11 @@ module Envy
 
     # Reset memoized values for all variables
     def reset
-      @variables.values.each(&:reset)
+      each(&:reset)
+    end
+
+    def dup
+      self.class.new(@source)
     end
 
     def validate
