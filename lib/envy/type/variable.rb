@@ -1,18 +1,18 @@
 module Envy
   module Type
     class Variable
-      attr_reader :environment, :name, :description, :from
+      attr_reader :dsl, :name, :description
 
-      # environment  - an instance of Envy::Environment
-      # name         - the name of the environment variable
+      # dsl  - an instance of Envy::Environment
+      # name - the name of the environment variable
       #
       # Options:
       #   description: - a friendly description of the environment variable
       #   required:    - a boolean indiciting if a value is required
       #   default:     - a default value or Proc if the variable is not set
       #   from:        - the name of the environment variable to fetch the value from
-      def initialize(environment, name, description: nil, required: true, default: nil, from: name.to_s.upcase, &transform)
-        @environment = environment
+      def initialize(dsl, name, description: nil, required: true, default: nil, from: nil, &transform)
+        @dsl = dsl
         @name = name
         @description = description
         @required = required
@@ -64,7 +64,12 @@ module Envy
       #
       # Returns a string from the environment variable, or the default value.
       def fetch
-        environment.source.fetch(@from) { default }
+        dsl.environment.fetch(from) { default }
+      end
+
+      # Name of variable in the environment
+      def from
+        @from || dsl.variable_name(name)
       end
 
       # Override in subclasses to perform casting.
@@ -85,7 +90,7 @@ module Envy
         if option.respond_to?(:call)
           option.call(*args)
         elsif option.respond_to?(:to_proc)
-          option.to_proc.call(environment, *args)
+          option.to_proc.call(dsl.environment, *args)
         else
           option
         end

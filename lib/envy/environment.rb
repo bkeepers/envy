@@ -2,12 +2,11 @@ module Envy
   class Environment
     include Enumerable
 
-    attr_reader :source
-
-    def initialize(source = ENV)
-      @source = source
+    def initialize(source = nil, &block)
+      @source = source || block || ENV
       @variables = {}
-      extend readers
+      @readers = Module.new
+      extend @readers
     end
 
     # Setup the environment.
@@ -23,17 +22,21 @@ module Envy
       self
     end
 
-    def readers
-      @readers ||= Module.new
-    end
-
     def add(variable)
       @variables[variable.name] = variable
-      readers.send :define_method, variable.method_name, &variable.method(:value)
+      @readers.send :define_method, variable.method_name, &variable.method(:value)
     end
 
     def [](name)
       @variables[name]
+    end
+
+    def fetch(key, default = nil, &block)
+      block ||= lambda { default }
+      value = @source[key]
+      value = default if value.nil?
+      value = block[key] if value.nil?
+      value
     end
 
     # Iterate over each defined environment variable.
@@ -45,7 +48,11 @@ module Envy
 
     # Reset memoized values for all variables
     def reset
-      @variables.values.each(&:reset)
+      each(&:reset)
+    end
+
+    def dup
+      self.class.new(@source)
     end
 
     def validate

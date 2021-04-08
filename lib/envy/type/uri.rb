@@ -4,8 +4,8 @@ require "addressable/template"
 module Envy
   module Type
     class URI < Variable
-      def initialize(environment, name, template: nil, **args, &block)
-        super environment, name, **args, &block
+      def initialize(dsl, name, template: nil, **args, &block)
+        super dsl, name, **args, &block
 
         @template = Addressable::Template.new(template) if template
       end

@@ -1,7 +1,8 @@
 require "spec_helper"
 
 describe Envy::Environment do
-  subject { Envy::Environment.new({}) }
+  let(:env) { {} }
+  subject { Envy::Environment.new(env) }
 
   describe "setup" do
     it "loads the envfile" do
@@ -30,8 +31,8 @@ describe Envy::Environment do
 
   describe "validate" do
     it "does not raise an error if all required variables are present" do
+      env["APP_URL"] = "https://example.com"
       subject.setup { string :app_url }
-      subject.source["APP_URL"] = "https://example.com"
       subject.validate
     end
 

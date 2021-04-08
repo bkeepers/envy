@@ -4,16 +4,16 @@ describe Envy::DSL do
   let(:env) { {} }
   let(:envy) { Envy::Environment.new(env) }
 
-  def procfile(&block)
+  def envfile(&block)
     envy.setup(&block)
   end
 
-  def self.procfile(&block)
-    before { procfile(&block) }
+  def self.envfile(&block)
+    before { envfile(&block) }
   end
 
   describe "desc" do
-    procfile do
+    envfile do
       desc "a description"
       string :described
 
@@ -32,7 +32,7 @@ describe Envy::DSL do
   describe "string" do
     it "returns the value" do
       env["STR"] = "a string"
-      procfile { string :str }
+      envfile { string :str }
 
       expect(envy.str).to eql("a string")
     end
@@ -40,7 +40,7 @@ describe Envy::DSL do
 
   describe "integer" do
     before do
-      procfile { integer :int, required: false }
+      envfile { integer :int, required: false }
     end
 
     it "returns nil if not defined" do
@@ -59,7 +59,7 @@ describe Envy::DSL do
   end
 
   describe "boolean" do
-    procfile { boolean :bool, required: false }
+    envfile { boolean :bool, required: false }
 
     ["0", "false", false, "off", "no", "f", "n"].each do |input|
       it "casts #{input.inspect} to false" do
@@ -89,7 +89,7 @@ describe Envy::DSL do
   end
 
   describe "uri" do
-    procfile { uri :app_url, required: false }
+    envfile { uri :app_url, required: false }
 
     it "returns nil if not defined" do
       expect(envy.app_url).to be(nil)
@@ -103,7 +103,7 @@ describe Envy::DSL do
   end
 
   describe "decimal" do
-    procfile { decimal :price, required: false }
+    envfile { decimal :price, required: false }
     it "returns nil if not defined" do
       expect(envy.price).to be(nil)
     end
@@ -117,18 +117,18 @@ describe Envy::DSL do
 
   describe ":default option" do
     it "returns the default if no value is provided" do
-      procfile { string :blank, default: "not blank" }
+      envfile { string :blank, default: "not blank" }
       expect(envy.blank).to eql("not blank")
     end
 
     it "does not return the default if a value is provided" do
-      procfile { boolean :bool, default: true }
+      envfile { boolean :bool, default: true }
       env["BOOL"] = 'false'
       expect(envy.bool?).to be(false)
     end
 
     it "gets value from other variable with a symbol" do
-      procfile do
+      envfile do
         string :default_from_other_var, default: :other_var
         string :other_var, default: "default"
       end
@@ -141,7 +141,7 @@ describe Envy::DSL do
     it "instance evals block to transform value" do
       env["MAGIC_NUMBER"] = 5
 
-      procfile do
+      envfile do
         integer :multiplier, default: 2
 
         integer :magic_number do |value|
@@ -155,7 +155,7 @@ describe Envy::DSL do
 
   describe "eval" do
     it "evaluates the given file" do
-      procfile do
+      envfile do
         eval File.expand_path("../../fixtures/Envfile", __FILE__)
       end
 
@@ -163,7 +163,7 @@ describe Envy::DSL do
     end
 
     it "works with a Pathname" do
-      procfile do
+      envfile do
         eval Pathname.new(File.expand_path("../../fixtures/Envfile", __FILE__))
       end
 
@@ -172,8 +172,49 @@ describe Envy::DSL do
 
     it "raises Errno::ENOENT if file does not exist" do
       expect do
-        procfile { eval "notfound" }
+        envfile { eval "notfound" }
       end.to raise_error(Errno::ENOENT)
     end
+  end
+
+  describe "scope" do
+    it "define scoped accessors" do
+      envfile do
+        scope :aws do
+          string :access_key_id
+        end
+      end
+
+      env["AWS_ACCESS_KEY_ID"] = "xyz"
+      expect(envy.aws.access_key_id).to eq("xyz")
+    end
+
+    it "respects :from" do
+      envfile do
+        scope :recaptcha, from: "GOOGLE_RECAPTCHA" do
+          string :secret_key
+          string :public_key, from: "GRE_PUBLIC_KEY"
+        end
+      end
+
+      env["GOOGLE_RECAPTCHA_SECRET_KEY"] = "secret"
+      env["GRE_PUBLIC_KEY"] = "public"
+      expect(envy.recaptcha.secret_key).to eq("secret")
+      expect(envy.recaptcha.public_key).to eq("public")
+    end
+
+    it "does not accept default:" do
+      expect do
+        envfile { scope :test, default: "whoops!" }
+      end.to raise_error(ArgumentError, "unknown keyword: :default")
+    end
+
+    it "does not accept required:" do
+      expect do
+        envfile { scope :test, required: false }
+      end.to raise_error(ArgumentError, "unknown keyword: :required")
+    end
+
+    it "validates missing variables"
   end
 end
